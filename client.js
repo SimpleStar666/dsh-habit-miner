@@ -29,7 +29,7 @@ window.__ModuleLoader__.load({
     const DICT = {
       zh: {
         'type.label': '习惯',
-        'guide.title': '提纯习惯',
+        'guide.title': '习惯规则',
         'guide.description': '把反复纠正你的做法变成规则',
         pending: '待确认',
         applied: '已生效',
@@ -62,11 +62,12 @@ window.__ModuleLoader__.load({
         effectHint: 'DSH 没有 watcher：下次读取该目录或新开会话时才生效。',
         errorPrefix: '出错了：{message}',
         loading: '读取中…',
+        retry: '重试',
         storeHint: '数据目录：{path}',
       },
       en: {
         'type.label': 'Habits',
-        'guide.title': 'Distilled habits',
+        'guide.title': 'Habit rules',
         'guide.description': 'Repeated corrections turned into rules',
         pending: 'To confirm',
         applied: 'In effect',
@@ -99,6 +100,7 @@ window.__ModuleLoader__.load({
         effectHint: 'DSH has no watcher: the rule applies when that directory is read next or in a new session.',
         errorPrefix: 'Failed: {message}',
         loading: 'Loading…',
+        retry: 'Retry',
         storeHint: 'Data folder: {path}',
       },
     }
@@ -356,7 +358,8 @@ window.__ModuleLoader__.load({
 
       if (!state) {
         return h('div', { className: 'hbm-status' },
-          error ? h('p', null, t('errorPrefix', { message: error })) : h('p', null, t('loading')))
+          error ? h('p', null, t('errorPrefix', { message: error })) : h('p', null, t('loading')),
+          error ? h('button', { className: 'hbm-btn', onClick: load }, t('retry')) : null)
       }
 
       const workspace = state.agents?.workspace ?? null

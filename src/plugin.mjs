@@ -31,7 +31,7 @@ export { Config };
 export const name = 'dsh-habit-miner';
 
 /** Services this plugin needs; everything else is probed defensively. */
-export const inject = ['tools', 'systemPrompt', 'sessions'];
+export const inject = ['tools', 'systemPrompt', 'sessions', 'connection'];
 
 /** System-prompt section name. */
 const SECTION_NAME = 'habit-miner';
@@ -98,6 +98,7 @@ export function apply(ctx, rawConfig) {
     if (!config.debugLog) return;
     try {
       writeJson(`${paths.dir}/debug.json`, { at: new Date().toISOString(), message });
+      appendJsonl(`${paths.dir}/debug.log.jsonl`, { at: new Date().toISOString(), message });
     } catch { /* diagnostics only */ }
   };
   const warn = (message) => debug(`WARN ${message}`);
@@ -309,15 +310,14 @@ export function apply(ctx, rawConfig) {
   // and reading an undeclared service throws, so it is probed through ctx.get.
   const getConnection = () => {
     try {
-      if (typeof ctx.get === 'function') {
-        const connection = ctx.get('connection');
-        if (connection && typeof connection.fetch?.register === 'function') return connection;
-      }
+      const connection = ctx.connection;
+      if (connection && typeof connection.fetch?.register === 'function') return connection;
     } catch { /* service absent */ }
     return null;
   };
 
   const connection = getConnection();
+  debug(`connection service: ${connection ? 'available' : 'missing'}`);
   if (connection) {
     try {
       ctx.effect(() => {
@@ -338,6 +338,7 @@ export function apply(ctx, rawConfig) {
               }
             })();
 
+            debug(`request ${request.method} ${request.url}`);
             if (pathname === STATE_PATH) {
               if (request.method !== 'GET' && request.method !== 'POST') {
                 return jsonResponse({ ok: false, error: '方法不允许。' }, 405);

@@ -114,6 +114,7 @@ function scanMessage(scan) {
     if (scan.reason === 'no-session-query') return '这个环境没有会话历史接口，只能从新对话里收集。';
     return `扫描没有完成：${scan.reason}`;
   }
+  if ((scan.sessions || 0) === 0) return '没有新会话可扫（已经扫过的会话会跳过）。';
   return `扫了 ${scan.sessions} 个会话、${scan.events} 条消息，新增 ${scan.signals} 条线索。`;
 }
 
