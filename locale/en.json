@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Habit miner",
+    "description": "Turns the corrections you repeat into AGENTS.md rules. Nothing is written until you confirm it, and every rule can be undone.",
+    "detail": "docs/DETAIL.md"
+  }
+}

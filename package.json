@@ -1,0 +1,58 @@
+{
+  "name": "dsh-habit-miner",
+  "version": "0.1.0",
+  "description": "习惯挖掘器 dsh-habit-miner：把你在对话里反复纠正 AI 的做法，整理成 AGENTS.md 规则；只有你确认后才写入，逐条可撤销。明确不做：不自动改规则、不读取别人的数据、不上传任何内容、不碰你的提示词历史。",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "src",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "docs",
+    "icon.svg",
+    "README.md",
+    "LICENSE",
+    "plugin-index.json"
+  ],
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "habit",
+    "preferences",
+    "agents-md",
+    "instruction",
+    "review"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node tools/check-plugin-contract.mjs",
+    "verify": "node --test test/*.test.mjs && node tools/check-plugin-contract.mjs && node --check client.js && node --check index.js"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right"
+      ]
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "习惯挖掘器",
+    "description": "把你反复纠正 AI 的做法整理成 AGENTS.md 规则，确认后才生效；每条都能撤销。",
+    "detail": "docs/DETAIL.md"
+  }
+}
