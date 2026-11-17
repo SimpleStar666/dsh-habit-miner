@@ -41,9 +41,11 @@ export const DEFAULTS = Object.freeze({
   order: 960,
   /** Write a debug log next to the store. */
   debugLog: false,
+  /** Allow the model-facing habit_accept tool to write rules; panel approval remains the default. */
+  allowToolAccept: false,
 });
 
-const BOOLEAN_KEYS = ['enabled', 'capture', 'scanOnFirstRun', 'injectHint', 'debugLog'];
+const BOOLEAN_KEYS = ['enabled', 'capture', 'scanOnFirstRun', 'injectHint', 'debugLog', 'allowToolAccept'];
 const NUMBER_KEYS = [
   'captureMinChars', 'minSessions', 'minSupport', 'maxPending', 'maxObserving',
   'scanDays', 'scanMaxSessions', 'order',

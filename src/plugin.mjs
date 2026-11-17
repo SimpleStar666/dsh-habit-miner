@@ -78,6 +78,22 @@ export function sessionWorkspace(session) {
 }
 
 /**
+ * Return the stable refusal used when the model-facing write tool is disabled.
+ *
+ * The panel is the default approval boundary. Keeping this check in the host
+ * adapter (rather than only in the tool description) means a model cannot write
+ * an AGENTS.md rule merely by deciding to call `habit_accept`.
+ *
+ * @param {object} config normalized plugin config
+ * @returns {{ok: false, message: string}|null}
+ */
+export function toolAcceptDisabled(config) {
+  return config?.allowToolAccept === true
+    ? null
+    : { ok: false, message: '为安全起见，模型工具默认不能写规则；请在习惯面板点击「采纳」，或显式开启 allowToolAccept。' };
+}
+
+/**
  * Apply the plugin to a host context.
  *
  * @param {any} ctx cordis plugin context
@@ -239,6 +255,8 @@ export function apply(ctx, rawConfig) {
       };
     },
     accept: (args = {}) => {
+      const disabled = toolAcceptDisabled(config);
+      if (disabled) return { ...disabled, pending: buildView(paths, config, contextFor(null)).counts.pending };
       try {
         const session = args?.sessionId ? getSession(args.sessionId) : null;
         const result = acceptCandidate(paths, config, {
@@ -284,7 +302,9 @@ export function apply(ctx, rawConfig) {
         return [
           '【习惯挖掘器】',
           `有 ${view.counts.pending} 条待确认的习惯（来自用户反复纠正你的地方）。`,
-          '用 habit_list 查看；用户明确同意后用 habit_accept 写入 AGENTS.md。',
+          config.allowToolAccept
+            ? '用 habit_list 查看；用户明确同意后用 habit_accept 写入 AGENTS.md。'
+            : '用 habit_list 查看并帮助分析证据；最终请用户在习惯面板点击「采纳」。模型工具不能直接写入规则。',
           '不要自己替用户确认。',
         ].join('');
       } catch {

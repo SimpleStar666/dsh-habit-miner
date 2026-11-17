@@ -1,6 +1,6 @@
 {
   "name": "dsh-habit-miner",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "习惯挖掘器 dsh-habit-miner：把你在对话里反复纠正 AI 的做法，整理成 AGENTS.md 规则；只有你确认后才写入，逐条可撤销。明确不做：不自动改规则、不读取别人的数据、不上传任何内容、不碰你的提示词历史。",
   "type": "module",
   "private": true,
@@ -22,6 +22,7 @@
     "docs",
     "icon.svg",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE",
     "plugin-index.json"
   ],

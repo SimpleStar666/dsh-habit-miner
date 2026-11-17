@@ -125,24 +125,42 @@ export function readBlock(content) {
 
 /**
  * Replace (or append) the managed block in a file's content.
+ * Existing content outside the marker span is never trimmed or normalized.
+ * Ambiguous/incomplete marker pairs are rejected, including when deleting rules.
  *
  * @param {string} content existing file content
  * @param {{id: string, text: string}[]} rules rules that should be in the block
  * @returns {string} the new file content
+ * @throws {Error} when managed block markers are missing, reversed or repeated
  */
 export function writeBlock(content, rules) {
   const text = String(content ?? '');
-  const block = renderBlock(rules);
-  const current = readBlock(text);
-  if (current.found && current.end >= 0) {
-    const head = text.slice(0, current.start).replace(/\s+$/, '');
-    const tail = text.slice(current.end).replace(/^\s+/, '');
-    const body = block ? `\n\n${block}\n` : '\n';
-    return `${head}${body}${tail}`.replace(/\n{3,}/g, '\n\n');
+  const start = text.indexOf(BLOCK_BEGIN);
+  const end = text.indexOf(BLOCK_END);
+  const hasMarkers = start >= 0 || end >= 0;
+  if (hasMarkers && (
+    start < 0 || end < start ||
+    text.indexOf(BLOCK_BEGIN, start + BLOCK_BEGIN.length) >= 0 ||
+    text.indexOf(BLOCK_END, end + BLOCK_END.length) >= 0
+  )) {
+    throw new Error('Invalid habit-miner managed block markers; refusing to modify content');
+  }
+
+  const newline = text.match(/\r\n|\n|\r/)?.[0] ?? '\n';
+  const block = renderBlock(rules).replace(/\r?\n/g, newline);
+  if (hasMarkers) {
+    return text.slice(0, start) + block + text.slice(end + BLOCK_END.length);
   }
   if (!block) return text;
-  const trimmed = text.replace(/\s+$/, '');
-  return trimmed ? `${trimmed}\n\n${block}\n` : `${block}\n`;
+
+  // Append at a fresh paragraph without consuming any existing bytes. Reuse
+  // existing trailing blank lines, but finish a whitespace-only last line first.
+  const trailingWhitespace = text.match(/[ \t\r\n]*$/)[0];
+  const lineBreaks = trailingWhitespace.match(/\r\n|\n|\r/g)?.length ?? 0;
+  const separator = !text || text === '\uFEFF' ? ''
+    : lineBreaks === 0 ? newline + newline
+      : /[\r\n]$/.test(text) && lineBreaks >= 2 ? '' : newline;
+  return text + separator + block + newline;
 }
 
 /**
