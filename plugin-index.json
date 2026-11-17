@@ -43,6 +43,16 @@
       },
       "versions": [
         {
+          "version": "0.1.1",
+          "publishTimestamp": 1794884328,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/SimpleStar666/dsh-habit-miner",
+            "commit": "58de48737234474dcfeb47477a987bfca9f37043"
+          },
+          "engines": {}
+        },
+        {
           "version": "0.1.0",
           "publishTimestamp": 1794846905,
           "source": {
